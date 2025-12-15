@@ -2,6 +2,7 @@ import { openaiClient } from "./openai";
 import { qdrantClient } from "../vector/qdrant";
 import { generateContentHash, isValidHash } from "../../utils/hash";
 import type { PrismaClient } from "@repo/database";
+import { PrismaClient as PrismaClientClass, adapter } from "@repo/database";
 
 
 const EMBEDDING_MODEL = process.env.EMBEDDING_MODEL ?? "";
@@ -43,7 +44,7 @@ export class EmbeddingService {
         this.model = EMBEDDING_MODEL;
         this.dimension = EMBEDDING_DIMENSION;
         this.collectionName = QDRANT_COLLECTION_NAME;
-        this.prisma = prismaClient ?? new PrismaClient();
+        this.prisma = prismaClient ?? new PrismaClientClass({ adapter });
     }
 
     private async checkExistingEmbedding(contentHash: string, userId?: number) {

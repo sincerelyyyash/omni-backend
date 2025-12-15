@@ -18,7 +18,9 @@
     "studio": "prisma studio"
   },
   "dependencies": {
-    "@prisma/client": "latest"
+    "@prisma/adapter-postgres": "latest",
+    "@prisma/client": "latest",
+    "pg": "^8.11.3"
   },
   "devDependencies": {
     "@repo/eslint-config": "*",
