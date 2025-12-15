@@ -1,4 +1,4 @@
-import { getPrismaClient } from "../../db/prisma.client";
+import { prisma } from "@repo/database";
 import type { EmbeddingResult, SearchResult } from "../embedding/embedding.service";
 import { getEmbeddingService } from "../embedding/embedding.service";
 import { generateContentHash } from "../../utils/hash";
@@ -15,7 +15,6 @@ import type {
   GenerateAnswerInput,
 } from "@packages/types/memory";
 
-const prisma = getPrismaClient();
 const embeddingService = getEmbeddingService(prisma);
 
 const ANSWER_MODEL = process.env.ANSWER_MODEL ?? "gpt-4o-mini";
@@ -153,9 +152,9 @@ export const updateMemory = async(input: UpdateMemoryInput) => {
 
     if(!id) throw new Error("Memory id is required");
 
-    let contentHashUpdate: {contenHash?: string} = {};
+    let contentHashUpdate: {contentHash?: string} = {};
     if(typeof content === "string"){
-        contentHashUpdate = {contenHash: generateContentHash(content)};
+        contentHashUpdate = {contentHash: generateContentHash(content)};
     }
 
     const updated = await prisma.memory.update({

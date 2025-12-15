@@ -1,7 +1,7 @@
 import { openaiClient } from "./openai";
 import { qdrantClient } from "../vector/qdrant";
 import { generateContentHash, isValidHash } from "../../utils/hash";
-import { PrismaClient } from "@prisma/client";
+import type { PrismaClient } from "@repo/database";
 
 
 const EMBEDDING_MODEL = process.env.EMBEDDING_MODEL ?? "";
