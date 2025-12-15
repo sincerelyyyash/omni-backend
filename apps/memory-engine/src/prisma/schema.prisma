@@ -1,0 +1,37 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Memory {
+  id            Int      @id @default(autoincrement())
+  userId        Int
+  agentId       String?  @db.VarChar(191)
+  runId         String?  @db.VarChar(191)
+  role          String?  @db.VarChar(64)
+  source        String
+  sourceId      String   @db.VarChar(191)
+  timestamp     DateTime
+  contentUrl    String
+  title         String
+  origin        String
+  tags          String[]
+  category      String[]
+  attribute     Json     @default("{}")
+  summary       String
+  type          String
+  importance    Float
+  confidence    Float
+  embeddingRef  Int
+  contentHash   String   @unique
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([contentHash])
+  @@index([userId, contentHash])
+  @@index([userId, agentId, runId])
+}
