@@ -1,47 +1,208 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 datasource db {
   provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 generator client {
   provider = "prisma-client-js"
-  output = "../generated/client"
+  output   = "../generated/client"
 }
 
 model User {
-  id            String    @id @default(cuid())
-  name          String?
-  email         String?   @unique
-  emailVerified DateTime?
+  id              Int              @id @default(autoincrement())
+  email           String           @unique
+  passwordHash    String
+  name            String?
+  emailVerified   DateTime?
+
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+
+  connections     Connection[]
+  syncJobs        SyncJob[]
+  tasks           Task[]
+  agentRuns       AgentRun[]
+  notifications   Notification[]
 }
 
 model Memory {
-  id            Int      @id @default(autoincrement())
-  userId        Int
-  agentId       String?  @db.VarChar(191)
-  runId         String?  @db.VarChar(191)
-  role          String?  @db.VarChar(64)
-  source        String
-  sourceId      String   @db.VarChar(191)
-  timestamp     DateTime
-  contentUrl    String
-  title         String
-  origin        String
-  tags          String[]
-  category      String[]
-  attribute     Json     @default("{}")
-  summary       String
-  type          String
-  importance    Float
-  confidence    Float
-  embeddingRef  Int
-  contentHash   String   @unique
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  id           Int      @id @default(autoincrement())
+  userId       Int
+  agentId      String?  @db.VarChar(191)
+  runId        String?  @db.VarChar(191)
+  role         String?  @db.VarChar(64)
+  source       String
+  sourceId     String   @db.VarChar(191)
+  timestamp    DateTime
+  contentUrl   String
+  title        String
+  origin       String
+  tags         String[]
+  category     String[]
+  attribute    Json     @default("{}")
+  summary      String
+  type         String
+  importance   Float
+  confidence   Float
+  embeddingRef Int
+  contentHash  String   @unique
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
   @@index([contentHash])
   @@index([userId, contentHash])
   @@index([userId, agentId, runId])
+}
+
+enum Provider {
+  GMAIL
+  GOOGLE_CALENDAR
+  GITHUB
+  SLACK
+  NOTION
+  OTHER
+}
+
+enum ConnectionStatus {
+  CONNECTED
+  DISCONNECTED
+  ERROR
+  REVOKED
+}
+
+enum SyncJobStatus {
+  PENDING
+  RUNNING
+  SUCCEEDED
+  FAILED
+}
+
+enum SyncJobType {
+  FULL
+  INCREMENTAL
+}
+
+enum TaskStatus {
+  OPEN
+  IN_PROGRESS
+  DONE
+  ARCHIVED
+}
+
+enum TaskPriority {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum AgentType {
+  DAILY_BRIEF
+  WEEKLY_REVIEW
+  TASK_EXTRACTOR
+  PLANNER
+  CUSTOM
+}
+
+enum AgentStatus {
+  PENDING
+  RUNNING
+  SUCCEEDED
+  FAILED
+}
+
+model Connection {
+  id           String           @id @default(cuid())
+  user         User             @relation(fields: [userId], references: [id])
+  userId       Int
+  provider     Provider
+  status       ConnectionStatus @default(CONNECTED)
+
+  accessToken  String
+  refreshToken String?
+  scopes       String?
+  expiresAt    DateTime?
+
+  lastSyncedAt DateTime?
+
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+
+  syncJobs     SyncJob[]
+}
+
+model SyncJob {
+  id           String        @id @default(cuid())
+  user         User          @relation(fields: [userId], references: [id])
+  userId       Int
+  connection   Connection?   @relation(fields: [connectionId], references: [id])
+  connectionId String?
+
+  type         SyncJobType
+  status       SyncJobStatus @default(PENDING)
+
+  startedAt    DateTime?
+  finishedAt   DateTime?
+  errorMessage String?
+  stats        Json?
+
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+}
+
+model Task {
+  id               String       @id @default(cuid())
+  user             User         @relation(fields: [userId], references: [id])
+  userId           Int
+
+  title            String
+  description      String?
+  status           TaskStatus   @default(OPEN)
+  priority         TaskPriority @default(MEDIUM)
+  dueDate          DateTime?
+
+  source           String?
+  sourceId         String?
+  sourceUrl        String?
+  requestedBy      String?
+
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
+  completedAt      DateTime?
+
+  agentCreatedBy   AgentRun?    @relation("AgentCreatedTasks", fields: [agentCreatedById], references: [id])
+  agentCreatedById String?
+}
+
+model AgentRun {
+  id           String     @id @default(cuid())
+  user         User       @relation(fields: [userId], references: [id])
+  userId       Int
+
+  type         AgentType
+  status       AgentStatus @default(PENDING)
+
+  input        Json
+  output       Json?
+  errorMessage String?
+
+  startedAt    DateTime?
+  finishedAt   DateTime?
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  createdTasks Task[]      @relation("AgentCreatedTasks")
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    Int
+
+  title     String
+  body      String
+  data      Json?
+  readAt    DateTime?
+
+  createdAt DateTime @default(now())
 }
