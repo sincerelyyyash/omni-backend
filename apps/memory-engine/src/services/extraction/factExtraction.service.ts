@@ -1,5 +1,5 @@
 import { openaiClient } from "../embedding/openai";
-import { factSchema, factsResponseSchema } from "@packages/types/index";
+import { factsResponseSchema } from "@packages/types/index";
 
 
 
