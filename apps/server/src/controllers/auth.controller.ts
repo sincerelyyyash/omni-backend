@@ -3,8 +3,26 @@ import { signInSchema, signUpSchema } from "@packages/types/index"
 import { prisma } from "@repo/database";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import { fromNodeHeaders } from "better-auth/node";
+import { auth } from "../auth.ts"
+
 
 const JWT_SECRET = process.env.JWT_SECRET ?? "superSecretToken";
+
+export const authSession = async (req: Request, res: Response) => {
+  try {
+    const session = auth.api.getSession({
+      headers: fromNodeHeaders(req.headers),
+    });
+    return res.json(session);
+  } catch (err) {
+    return res.status(500).json({
+      message: "Failed to get session",
+      error: (err as Error).message,
+    })
+  }
+}
+
 
 export const userSignUp = async (req: Request, res: Response) => {
   const { success, data } = signUpSchema.safeParse(req.body);
