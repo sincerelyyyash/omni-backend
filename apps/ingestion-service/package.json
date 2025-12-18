@@ -1,0 +1,23 @@
+{
+  "name": "ingestion-service",
+  "module": "index.ts",
+  "type": "module",
+  "private": true,
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "dependencies": {
+    "@repo/database": "*",
+    "@repo/redis": "*",
+    "@repo/types": "*",
+    "@types/dotenv": "^8.2.3",
+    "@types/node-cron": "^3.0.11",
+    "dotenv": "^17.2.3",
+    "googleapis": "^144.0.0",
+    "node-cron": "^3.0.3",
+    "zod": "^4.1.13"
+  }
+}
