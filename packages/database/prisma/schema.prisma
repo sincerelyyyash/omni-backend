@@ -98,3 +98,29 @@ model Memory {
   @@index([userId, agentId, runId])
 }
 
+model Notification {
+  id            String   @id @default(uuid())
+  userId        Int
+  memoryId      Int      @unique
+  source        String
+  type          String
+  priority      String
+  status        String   @default("unread")
+  requiresAction Boolean @default(false)
+  actionType    String?
+  actionUrl     String?
+  dueDate       DateTime?
+  enrichedData  Json     @default("{}")
+  suggestions   Json     @default("[]")
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  readAt        DateTime?
+
+  @@index([userId, status])
+  @@index([userId, source])
+  @@index([userId, priority])
+  @@index([userId, requiresAction])
+  @@index([userId, createdAt])
+  @@map("notification")
+}
+
