@@ -12,6 +12,7 @@
   "dependencies": {
     "@qdrant/js-client-rest": "^1.16.2",
     "@repo/database": "*",
+    "@repo/redis": "*",
     "@repo/types": "*",
     "@types/dotenv": "^8.2.3",
     "@types/express": "^5.0.6",

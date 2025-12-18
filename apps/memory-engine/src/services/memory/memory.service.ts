@@ -141,6 +141,17 @@ export const createMemoryWithEmbedding = async (input: CreateMemoryInput) => {
     },
   });
 
+  try {
+    const { createQueue } = await import("@repo/redis");
+    const enrichmentQueue = createQueue("memory:enrichment");
+    await enrichmentQueue.enqueue({
+      type: "memory:enrich",
+      payload: { memoryId: updateMemory.id, userId: updateMemory.userId },
+    });
+  } catch (error) {
+    console.error("Failed to enqueue enrichment job:", error);
+  }
+
   return {
     memory: updateMemory,
     isDuplicate: false,
@@ -289,6 +300,17 @@ export const addMemories = async (input: AddMemoryInput) => {
         where: { id: memory.id },
         data: { embeddingRef: memory.id },
       });
+
+      try {
+        const { createQueue } = await import("@repo/redis");
+        const enrichmentQueue = createQueue("memory:enrichment");
+        await enrichmentQueue.enqueue({
+          type: "memory:enrich",
+          payload: { memoryId: updatedMemory.id, userId: updatedMemory.userId },
+        });
+      } catch (error) {
+        console.error("Failed to enqueue enrichment job:", error);
+      }
 
       memories.push(updatedMemory);
       results.push(embeddingResult);

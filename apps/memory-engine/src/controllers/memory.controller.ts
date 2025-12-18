@@ -40,7 +40,7 @@ export const addMemory = async (req: Request, res: Response) => {
     return res.status(200).json(result);
   } catch (err) {
     return res.status(500).json({
-      message: "Intenal server error",
+      message: "Internal server error",
       error: (err as Error).message,
     })
   }
@@ -77,7 +77,7 @@ export const updateMemory = async (req: Request, res: Response) => {
     return res.status(200).json(result);
   } catch (err) {
     return res.status(500).json({
-      message: "Intenal server error",
+      message: "Internal server error",
       error: (err as Error).message,
     })
   }
@@ -97,7 +97,7 @@ export const deleteMemory = async (req: Request, res: Response) => {
     return res.status(200).json(result);
   } catch (err) {
     return res.status(500).json({
-      message: "Intenal server error",
+      message: "Internal server error",
       error: (err as Error).message,
     })
   }
@@ -118,7 +118,7 @@ export const getMemory = async (req: Request, res: Response) => {
     return res.status(200).json(result);
   } catch (err) {
     return res.status(500).json({
-      message: "Intenal server error",
+      message: "Internal server error",
       error: (err as Error).message,
     })
   }
@@ -144,7 +144,7 @@ export const getUserMemory = async (req: Request, res: Response) => {
     return res.status(200).json(result);
   } catch (err) {
     return res.status(500).json({
-      message: "Intenal server error",
+      message: "Internal server error",
       error: (err as Error).message,
     })
   }
@@ -164,7 +164,7 @@ export const addMemoriesController = async (req: Request, res: Response) => {
     return res.status(200).json(result);
   } catch (err) {
     return res.status(500).json({
-      message: "Intenal server error",
+      message: "Internal server error",
       error: (err as Error).message,
     })
   }
@@ -181,10 +181,10 @@ export const searchMemoriesController = async (req: Request, res: Response) => {
 
   try {
     const result = await searchMemories(data);
-    return res.status(200).json(result);
+    return res.status(200).json({ memories: result });
   } catch (err) {
     return res.status(500).json({
-      message: "Intenal server error",
+      message: "Internal server error",
       error: (err as Error).message,
     })
   }
@@ -205,7 +205,7 @@ export const generateAnswer = async (req: Request, res: Response) => {
     return res.status(200).json(result);
   } catch (err) {
     return res.status(500).json({
-      message: "Intenal server error",
+      message: "Internal server error",
       error: (err as Error).message,
     })
   }
@@ -231,7 +231,7 @@ export const askMemory = async (req: Request, res: Response) => {
     });
   } catch (err) {
     return res.status(500).json({
-      message: "Intenal server error",
+      message: "Internal server error",
       error: (err as Error).message,
     })
   }
