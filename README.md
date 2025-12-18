@@ -1,200 +1,389 @@
-# Turborepo + Prisma ORM starter
+# Everything Backend
 
-This is a example designed to help you quickly set up a Turborepo monorepo with a Next.js app and Prisma ORM. This is a community-maintained example. If you experience a problem, please submit a pull request with a fix. GitHub Issues will be closed.
+A comprehensive backend system for ingesting, storing, and intelligently processing data from multiple sources using AI-powered agents. Built as a monorepo with microservices architecture, this system provides semantic memory storage, intelligent data enrichment, and automated notifications.
 
-## What's inside?
+## Overview
 
-This turborepo includes the following packages/apps:
+Everything Backend is a distributed system that:
+- **Ingests** data from multiple external sources (Gmail, GitHub, Calendar, Twitter)
+- **Stores** memories with semantic search capabilities using vector embeddings
+- **Enriches** data using AI agents for action items, deadlines, finance tracking, and suggestions
+- **Notifies** users about important events and actionable items
 
-### Apps and packages
+## Architecture
 
-- `web`: a [Next.js](https://nextjs.org/) app
-- `@repo/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
-- `@repo/database`: [Prisma ORM](https://prisma.io/) to manage & access your database
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
+The system is built as a Turborepo monorepo with four main services:
 
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
-
-### Utilities
-
-This turborepo has some additional tools already setup for you:
-
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
-- [Prisma ORM](https://prisma.io/) for accessing the database
-- [Docker Compose](https://docs.docker.com/compose/) for a local MySQL database
-
-## Getting started
-
-Follow these steps to set up and run your Turborepo project with Prisma ORM:
-
-### 1. Create a Turborepo project
-
-Start by creating a new Turborepo project using the following command:
-
-```sh
-npx create-turbo@latest -e with-prisma
+```
+everything-backend/
+├── apps/
+│   ├── server/              # Main API server (Auth, Users, Notifications)
+│   ├── ingestion-service/  # Data ingestion from external sources
+│   ├── memory-engine/       # Semantic memory storage and retrieval
+│   └── ai-service/          # AI-powered data enrichment agents
+└── packages/
+    ├── database/            # Prisma ORM and database schema
+    ├── redis/               # Redis client and queue utilities
+    └── types/               # Shared TypeScript types
 ```
 
-Choose your desired package manager when prompted and a name for the app (e.g., `my-turborepo`). This will scaffold a new Turborepo project with Prisma ORM included and dependencies installed.
+### Services
 
-Navigate to your project directory:
+#### Server (`apps/server`)
+Main API server providing:
+- Authentication and authorization (Better Auth)
+- User management
+- Notification endpoints
+- RESTful API with Express
 
+#### Ingestion Service (`apps/ingestion-service`)
+Fetches and syncs data from external sources:
+- **Gmail**: Email ingestion via Google OAuth
+- **GitHub**: Repository and activity tracking
+- **Calendar**: Event synchronization
+- **Twitter**: Social media data ingestion
+- Scheduled sync jobs using cron
+- Redis Streams for job queueing
+
+#### Memory Engine (`apps/memory-engine`)
+Semantic memory storage and retrieval:
+- Fact-first storage architecture
+- Vector embeddings using OpenAI
+- Semantic search via Qdrant
+- RAG (Retrieval-Augmented Generation) capabilities
+- Content deduplication
+- PostgreSQL for structured data
+
+#### AI Service (`apps/ai-service`)
+AI-powered data enrichment:
+- **Action Item Agent**: Extracts actionable tasks
+- **Deadline Agent**: Identifies and tracks deadlines
+- **Finance Agent**: Financial data extraction and tracking
+- **Notification Agent**: Generates intelligent notifications
+- **Suggestion Agent**: Provides contextual suggestions
+
+## Tech Stack
+
+- **Runtime**: [Bun](https://bun.sh) (v1.2.22+)
+- **Monorepo**: [Turborepo](https://turborepo.org)
+- **Language**: TypeScript
+- **Database**: PostgreSQL with [Prisma ORM](https://www.prisma.io)
+- **Vector DB**: [Qdrant](https://qdrant.tech)
+- **Cache/Queue**: Redis
+- **AI/ML**: 
+  - OpenAI (embeddings, fact extraction, RAG)
+  - Google Gemini (agent processing)
+  - LangChain
+- **Auth**: Better Auth
+- **API Framework**: Express.js
+
+## Prerequisites
+
+- **Bun** >= 1.2.22 ([Installation Guide](https://bun.sh/docs/installation))
+- **PostgreSQL** >= 14
+- **Redis** >= 6
+- **Qdrant** (local or cloud instance)
+- **Node.js** >= 18 (for some tooling)
+
+## Installation
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/sincerelyyyash/everything-backend
+   cd everything-backend
+   ```
+
+2. **Install dependencies**
+   ```bash
+   bun install
+   ```
+
+3. **Set up PostgreSQL database**
+   ```bash
+   # Using Docker Compose (if available)
+   docker-compose up -d postgres
+   
+   # Or use your existing PostgreSQL instance
+   ```
+
+4. **Set up Redis**
+   ```bash
+   # Using Docker Compose (if available)
+   docker-compose up -d redis
+   
+   # Or use your existing Redis instance
+   ```
+
+5. **Set up Qdrant**
+   ```bash
+   # Using Docker
+   docker run -p 6333:6333 qdrant/qdrant
+   
+   # Or use Qdrant Cloud
+   ```
+
+## Configuration
+
+### Environment Variables
+
+Each service requires its own `.env` file. Copy the example files and configure:
+
+#### Root `.env`
 ```bash
-cd ./my-turborepo
+# Database
+DATABASE_URL="postgresql://user:password@localhost:5432/everything_db"
+
+# Redis
+REDIS_URL="redis://localhost:6379"
 ```
 
-### 2. Setup a local database with Docker Compose
-
-We use [Prisma ORM](https://prisma.io/) to manage and access our database. As such you will need a database for this project, either locally or hosted in the cloud.
-
-To make this process easier, a [`docker-compose.yml` file](./docker-compose.yml) is included to setup a MySQL server locally with a new database named `turborepo`:
-
-Start the MySQL database using Docker Compose:
-
-```sh
-docker-compose up -d
-```
-
-To change the default database name, update the `MYSQL_DATABASE` environment variable in the [`docker-compose.yml` file](/docker-compose.yml).
-
-### 3. Setup environment variables
-
-Once the database is ready, copy the `.env.example` file to the [`/packages/database`](./packages/database/) and [`/apps/web`](./apps/web/) directories as `.env`:
-
+#### Server (`apps/server/.env`)
 ```bash
-cp .env.example ./packages/database/.env
-cp .env.example ./apps/web/.env
+PORT=8000
+NODE_ENV=development
+DATABASE_URL="postgresql://user:password@localhost:5432/everything_db"
+REDIS_URL="redis://localhost:6379"
+
+# Auth
+AUTH_SECRET="your-secret-key"
+AUTH_URL="http://localhost:8000"
+
+# OAuth Providers
+GOOGLE_CLIENT_ID="your-google-client-id"
+GOOGLE_CLIENT_SECRET="your-google-client-secret"
+GITHUB_CLIENT_ID="your-github-client-id"
+GITHUB_CLIENT_SECRET="your-github-client-secret"
 ```
 
-This ensures Prisma has access to the `DATABASE_URL` environment variable, which is required to connect to your database.
-
-If you added a custom database name, or use a cloud based database, you will need to update the `DATABASE_URL` in your `.env` accordingly.
-
-### 4. Migrate your database
-
-Once your database is running, you’ll need to create and apply migrations to set up the necessary tables. Run the database migration command:
-
+#### Memory Engine (`apps/memory-engine/.env`)
 ```bash
-# Using npm
-npm run db:migrate:dev
+PORT=8001
+DATABASE_URL="postgresql://user:password@localhost:5432/everything_db"
+REDIS_URL="redis://localhost:6379"
+
+# OpenAI
+OPENAI_API_KEY="your-openai-api-key"
+EMBEDDING_MODEL="text-embedding-3-small"
+EMBEDDING_DIMENSION=1536
+ANSWER_MODEL="gpt-4o-mini"
+RERANK_MODEL="gpt-4o-mini"
+FACT_MODEL="gpt-4o-mini"
+RERANK_ENABLED="true"
+RERANK_TOP_K=5
+
+# Qdrant
+QDRANT_URL="http://localhost:6333"
+QDRANT_API_KEY=""  # Optional
+QDRANT_COLLECTION_NAME="memories"
 ```
 
-<details>
-
-<summary>Expand for <code>yarn</code>, <code>pnpm</code> or <code>bun</code></summary>
-
+#### Ingestion Service (`apps/ingestion-service/.env`)
 ```bash
-# Using yarn
-yarn run db:migrate:dev
+DATABASE_URL="postgresql://user:password@localhost:5432/everything_db"
+REDIS_URL="redis://localhost:6379"
+MEMORY_ENGINE_URL="http://localhost:8001"
 
-# Using pnpm
-pnpm run db:migrate:dev
-
-# Using bun
-bun run db:migrate:dev
+# OAuth (same as server)
+GOOGLE_CLIENT_ID="your-google-client-id"
+GOOGLE_CLIENT_SECRET="your-google-client-secret"
+GITHUB_CLIENT_ID="your-github-client-id"
+GITHUB_CLIENT_SECRET="your-github-client-secret"
 ```
 
-</details>
-
-You’ll be prompted to name the migration. Once you provide a name, Prisma will create and apply the migration to your database.
-
-> Note: The `db:migrate:dev` script (located in [packages/database/package.json](/packages/database/package.json)) uses [Prisma Migrate](https://www.prisma.io/migrate) under the hood.
-
-For production environments, always push schema changes to your database using the [`prisma migrate deploy` command](https://www.prisma.io/docs/orm/prisma-client/deployment/deploy-database-changes-with-prisma-migrate). You can find an example `db:migrate:deploy` script in the [`package.json` file](/packages/database/package.json) of the `database` package.
-
-### 5. Seed your database
-
-To populate your database with initial or fake data, use [Prisma's seeding functionality](https://www.prisma.io/docs/guides/database/seed-database).
-
-Update the seed script located at [`packages/database/src/seed.ts`](/packages/database/src/seed.ts) to include any additional data that you want to seed. Once edited, run the seed command:
-
+#### AI Service (`apps/ai-service/.env`)
 ```bash
-# Using npm
-npm run db:seed
+DATABASE_URL="postgresql://user:password@localhost:5432/everything_db"
+REDIS_URL="redis://localhost:6379"
+MEMORY_ENGINE_URL="http://localhost:8001"
+
+# Google Gemini
+GEMINI_API_KEY="your-gemini-api-key"
 ```
 
-<details>
+### Database Setup
 
-<summary>Expand for <code>yarn</code>, <code>pnpm</code> or <code>bun</code></summary>
+1. **Generate Prisma Client**
+   ```bash
+   bun run generate
+   ```
 
+2. **Run migrations**
+   ```bash
+   bun run db:migrate:dev
+   ```
+
+3. **Seed database (optional)**
+   ```bash
+   bun run db:seed
+   ```
+
+## Running the Project
+
+### Development Mode
+
+Run all services in development mode:
 ```bash
-# Using yarn
-yarn run db:seed
-
-# Using pnpm
-pnpm run db:seed
-
-# Using bun
-bun run db:seed
-```
-
-</details>
-
-### 6. Build your application
-
-To build all apps and packages in the monorepo, run:
-
-```bash
-# Using npm
-npm run build
-```
-
-<details>
-
-<summary>Expand for <code>yarn</code>, <code>pnpm</code> or <code>bun</code></summary>
-
-```bash
-# Using yarn
-yarn run build
-
-# Using pnpm
-pnpm run build
-
-# Using bun
-bun run build
-```
-
-</details>
-
-### 7. Start the application
-
-Finally, start your application with:
-
-```bash
-yarn run dev
-```
-
-<details>
-
-<summary>Expand for <code>yarn</code>, <code>pnpm</code> or <code>bun</code></summary>
-
-```bash
-# Using yarn
-yarn run dev
-
-# Using pnpm
-pnpm run dev
-
-# Using bun
 bun run dev
 ```
 
-</details>
+This starts all services concurrently using Turborepo.
 
-Your app will be running at `http://localhost:3000`. Open it in your browser to see it in action!
+### Individual Services
 
-You can also read the official [detailed step-by-step guide from Prisma ORM](https://pris.ly/guide/turborepo?utm_campaign=turborepo-example) to build a project from scratch using Turborepo and Prisma ORM.
+Run services individually:
 
-## Useful Links
+```bash
+# Server
+cd apps/server
+bun run dev
 
-Learn more about the power of Turborepo:
+# Memory Engine
+cd apps/memory-engine
+bun run dev
 
-- [Tasks](https://turborepo.com/docs/crafting-your-repository/running-tasks)
-- [Caching](https://turborepo.com/docs/crafting-your-repository/caching)
-- [Remote Caching](https://turborepo.com/docs/core-concepts/remote-caching)
-- [Filtering](https://turborepo.com/docs/crafting-your-repository/running-tasks#using-filters)
-- [Configuration Options](https://turborepo.com/docs/reference/configuration)
-- [CLI Usage](https://turborepo.com/docs/reference/command-line-reference)
-# everything-backend
+# Ingestion Service
+cd apps/ingestion-service
+bun run dev
+
+# AI Service
+cd apps/ai-service
+bun run dev
+```
+
+### Production Build
+
+Build all services:
+```bash
+bun run build
+```
+
+## Project Structure
+
+```
+everything-backend/
+├── apps/
+│   ├── server/                    # Main API server
+│   │   ├── src/
+│   │   │   ├── controllers/      # Request handlers
+│   │   │   ├── routes/            # API routes
+│   │   │   ├── middleware/        # Express middleware
+│   │   │   ├── services/          # Business logic
+│   │   │   └── auth.ts            # Better Auth configuration
+│   │   └── package.json
+│   │
+│   ├── ingestion-service/         # Data ingestion
+│   │   ├── src/
+│   │   │   ├── providers/         # External source providers
+│   │   │   │   ├── gmail/
+│   │   │   │   ├── github/
+│   │   │   │   ├── calendar/
+│   │   │   │   └── twitter/
+│   │   │   ├── scheduler/         # Cron jobs
+│   │   │   └── worker.ts          # Queue worker
+│   │   └── package.json
+│   │
+│   ├── memory-engine/              # Memory storage
+│   │   ├── src/
+│   │   │   ├── controllers/       # API controllers
+│   │   │   ├── routes/            # API routes
+│   │   │   ├── services/
+│   │   │   │   ├── memory/        # Core memory logic
+│   │   │   │   ├── embedding/     # Embedding generation
+│   │   │   │   ├── extraction/    # Fact extraction
+│   │   │   │   └── vector/        # Qdrant integration
+│   │   │   └── config/            # Prompts and config
+│   │   └── package.json
+│   │
+│   └── ai-service/                 # AI agents
+│       ├── src/
+│       │   ├── agents/             # AI agent implementations
+│       │   ├── services/           # Agent services
+│       │   └── worker.ts           # Queue worker
+│       └── package.json
+│
+├── packages/
+│   ├── database/                   # Prisma schema and client
+│   │   ├── prisma/
+│   │   │   └── schema.prisma       # Database schema
+│   │   └── src/
+│   │       └── client.ts           # Prisma client export
+│   │
+│   ├── redis/                      # Redis utilities
+│   │   └── src/
+│   │       ├── client.ts           # Redis client
+│   │       └── queue.ts            # Queue implementation
+│   │
+│   ├── types/                      # Shared TypeScript types
+│   │   ├── memory/
+│   │   ├── notification/
+│   │   └── user/
+│   │
+│   ├── config-eslint/              # ESLint configuration
+│   └── config-typescript/          # TypeScript configuration
+│
+├── package.json                    # Root package.json
+├── turbo.json                      # Turborepo configuration
+└── README.md                       # This file
+```
+
+## Key Features
+
+### Data Ingestion
+- Multi-source data synchronization (Gmail, GitHub, Calendar, Twitter)
+- OAuth token management with automatic refresh
+- Incremental sync to avoid duplicate processing
+- Scheduled background jobs
+
+### Semantic Memory
+- Fact-first storage architecture
+- Vector embeddings for semantic search
+- Content deduplication
+- RAG (Retrieval-Augmented Generation) for Q&A
+- Configurable embedding and reranking models
+
+### AI Enrichment
+- Automated action item extraction
+- Deadline detection and tracking
+- Financial data extraction
+- Intelligent notification generation
+- Contextual suggestions
+
+### Notifications
+- Priority-based notification system
+- Actionable notifications with URLs
+- Rich metadata and enrichment data
+- Status tracking (read/unread)
+
+## API Endpoints
+
+### Server API (`http://localhost:8000`)
+- `GET /health` - Health check
+- `POST /api/auth/*` - Authentication endpoints (Better Auth)
+- `GET /api/v1/users/*` - User management
+- `GET /api/v1/notifications/*` - Notification endpoints
+
+### Memory Engine API (`http://localhost:8001`)
+- `POST /api/memory` - Create a memory
+- `PUT /api/memory` - Update memory
+- `DELETE /api/memory` - Delete memory
+- `GET /api/memory` - Get memory by ID
+- `GET /api/memory/user` - List user memories
+- `POST /api/memories` - Batch ingest
+- `POST /api/memories/search` - Semantic search
+- `POST /api/memories/answer` - RAG Q&A
+- `POST /api/memories/ask` - Ask with query
+
+## Database Schema
+
+The system uses PostgreSQL with the following main models:
+- **User**: User accounts and authentication
+- **Account**: OAuth account connections
+- **Session**: User sessions
+- **Memory**: Stored memories with metadata
+- **Notification**: User notifications
+
+See `packages/database/prisma/schema.prisma` for the complete schema.
+
+## Support
+
+For issues, questions, or contributions, please open an issue on the [repository](https://github.com/sincerelyyyash/everything-backend).
