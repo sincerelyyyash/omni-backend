@@ -1,6 +1,6 @@
 # Omni Backend
 
-A comprehensive backend system powered by AI agents that ingests, stores, and intelligently processes data from multiple sources. Built as a monorepo with microservices architecture, Omni Backend uses advanced AI agents to transform raw data into actionable insights, semantic memories, and intelligent notifications.
+Omni Backend is an intelligent data processing platform that connects to Gmail, GitHub, Calendar, and Twitter to automatically extract actionable insights from your digital life. Powered by advanced AI agents, it transforms emails, code activity, calendar events, and social interactions into structured memories, prioritized notifications, and contextual suggestions—helping you stay organized and never miss what matters.
 
 ## Overview
 
@@ -461,4 +461,4 @@ See `packages/database/prisma/schema.prisma` for the complete schema.
 
 ## Support
 
-For issues, questions, or contributions, please open an issue on the [repository](https://github.com/sincerelyyyash/everything-backend).
+For issues, questions, or contributions, please open an issue on the [repository](https://github.com/sincerelyyyash/omni-backend).
