@@ -1,14 +1,14 @@
 # Omni Backend
 
-A comprehensive backend system for ingesting, storing, and intelligently processing data from multiple sources using AI-powered agents. Built as a monorepo with microservices architecture, this system provides semantic memory storage, intelligent data enrichment, and automated notifications.
+A comprehensive backend system powered by AI agents that ingests, stores, and intelligently processes data from multiple sources. Built as a monorepo with microservices architecture, Omni Backend uses advanced AI agents to transform raw data into actionable insights, semantic memories, and intelligent notifications.
 
 ## Overview
 
-Omni Backend is a distributed system that:
+Omni Backend is an AI-driven distributed system that:
 - **Ingests** data from multiple external sources (Gmail, GitHub, Calendar, Twitter)
 - **Stores** memories with semantic search capabilities using vector embeddings
-- **Enriches** data using AI agents for action items, deadlines, finance tracking, and suggestions
-- **Notifies** users about important events and actionable items
+- **Enriches** data using specialized AI agents that extract structured information, detect patterns, and generate actionable insights
+- **Notifies** users about important events, deadlines, and actionable items with intelligent prioritization
 
 ## Architecture
 
@@ -55,12 +55,12 @@ Semantic memory storage and retrieval:
 - PostgreSQL for structured data
 
 #### AI Service (`apps/ai-service`)
-AI-powered data enrichment:
-- **Action Item Agent**: Extracts actionable tasks
-- **Deadline Agent**: Identifies and tracks deadlines
-- **Finance Agent**: Financial data extraction and tracking
-- **Notification Agent**: Generates intelligent notifications
-- **Suggestion Agent**: Provides contextual suggestions
+AI-powered data enrichment with specialized agents:
+- **Action Item Agent**: Extracts actionable tasks with priority and due dates
+- **Deadline Agent**: Identifies and tracks time-sensitive deadlines
+- **Finance Agent**: Extracts financial transactions and payment information
+- **Notification Agent**: Classifies and prioritizes notifications intelligently
+- **Suggestion Agent**: Generates contextual, actionable suggestions
 
 ## Tech Stack
 
@@ -341,12 +341,87 @@ omni-backend/
 - RAG (Retrieval-Augmented Generation) for Q&A
 - Configurable embedding and reranking models
 
-### AI Enrichment
-- Automated action item extraction
-- Deadline detection and tracking
-- Financial data extraction
-- Intelligent notification generation
-- Contextual suggestions
+### AI Agents & Enrichment
+
+Omni Backend features a sophisticated AI agent system that processes every memory through specialized agents:
+
+#### Action Item Agent
+Extracts actionable tasks from emails, messages, and documents:
+- Identifies action verbs (review, approve, complete, follow-up, respond)
+- Extracts task descriptions and context
+- Assigns priority levels (high, medium, low) based on urgency
+- Detects and extracts due dates when mentioned
+- Handles direct requests and implicit tasks
+
+**Example**: From an email "Please review the PR by Friday" → Extracts: {text: "Review PR", verb: "review", priority: "high", dueDate: "2024-01-05"}
+
+#### Deadline Agent
+Detects and tracks time-sensitive items and deadlines:
+- Identifies explicit deadlines ("due by", "deadline", "before")
+- Extracts dates from natural language
+- Calculates urgency based on proximity (high: <24h, medium: <7d, low: >7d)
+- Tracks meeting dates, payment due dates, submission deadlines
+- Monitors time-sensitive items across all sources
+
+**Example**: From a calendar event "Project submission due Jan 10" → Extracts: {text: "Project submission", dueDate: "2024-01-10", urgency: "medium"}
+
+#### Finance Agent
+Extracts comprehensive financial information from receipts, bills, and transactions:
+- **Amount & Currency**: Detects amounts with currency inference (₹, $, €, INR, USD, etc.)
+- **Merchant/Vendor**: Identifies service providers and merchants
+- **Transaction Details**: Extracts transaction IDs, payment methods, bank information
+- **Payment Methods**: Recognizes cards, UPI (PhonePe, Google Pay, Paytm), NEFT, RTGS, IMPS, bank transfers
+- **Categories**: Classifies expenses (food, travel, utilities, shopping, entertainment, healthcare)
+- **Due Dates**: Tracks bill due dates and subscription renewals
+- **Account Info**: Extracts last 4 digits of cards/accounts when mentioned
+
+**Example**: From an email receipt "Paid ₹1,500 via UPI to Swiggy" → Extracts: {amount: 1500, currency: "INR", merchant: "Swiggy", type: "receipt", paymentMethod: "UPI", category: "food"}
+
+#### Notification Agent
+Intelligently classifies and prioritizes notifications:
+- **Type Classification**: Categorizes as email, PR review, mention, meeting, bill, action-item, etc.
+- **Priority Assessment**: Determines priority (high/medium/low) based on:
+  - Content urgency and importance
+  - Source credibility
+  - Time sensitivity
+  - User interaction patterns
+- **Action Detection**: Identifies if notification requires user action
+- **Action Type**: Specifies required action (review, reply, pay, attend, complete)
+- **Due Date Extraction**: Captures deadlines and time-sensitive information
+
+**Example**: From a GitHub notification "PR #123 needs your review" → Classifies: {type: "pr-review", priority: "high", requiresAction: true, actionType: "review"}
+
+#### Suggestion Agent
+Generates contextual, actionable suggestions based on notification content:
+- **Context-Aware Suggestions**: Creates relevant suggestions based on notification type and content
+- **Actionable Recommendations**: Provides specific actions users can take
+- **Priority-Based**: Suggests high-priority actions first
+- **Rich Context**: Includes relevant metadata (person names, dates, participants)
+
+**Examples**:
+- Calendar birthday event → "Would you like me to suggest birthday gift ideas for [person]?"
+- Meeting with participants → "Would you like a summary of emails between you and [participants]?"
+- PR review needed → "Would you like a review checklist for this PR?"
+- Bill due soon → "Would you like me to set a payment reminder?"
+
+All agents use Google Gemini for processing and return structured, validated data using Zod schemas.
+
+#### How AI Agents Work Together
+
+1. **Memory Ingestion**: Data from external sources (Gmail, GitHub, Calendar, Twitter) is ingested and stored as memories
+2. **Agent Processing**: Each memory is processed through all relevant AI agents in parallel:
+   - Action Item Agent extracts tasks
+   - Deadline Agent identifies time-sensitive items
+   - Finance Agent extracts financial data
+   - Notification Agent classifies and prioritizes
+   - Suggestion Agent generates actionable suggestions
+3. **Data Enrichment**: Extracted data is stored in the memory's `attribute` field as structured JSON
+4. **Notification Creation**: Based on agent outputs, intelligent notifications are created with:
+   - Priority levels
+   - Action requirements
+   - Due dates
+   - Contextual suggestions
+5. **User Insights**: Users receive prioritized, actionable notifications with suggestions they can execute
 
 ### Notifications
 - Priority-based notification system
