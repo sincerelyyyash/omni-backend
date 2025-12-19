@@ -89,7 +89,7 @@ AI-powered data enrichment with specialized agents:
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/sincerelyyyash/everything-backend
+   git clone https://github.com/sincerelyyyash/omni-backend
    cd omni-backend
    ```
 
