@@ -1,6 +1,6 @@
 # Server
 
-Main API server providing authentication, user management, and notification endpoints for the Everything Backend system.
+Main API server providing authentication, user management, and notification endpoints for the Omni Backend system.
 
 ## Overview
 
@@ -78,7 +78,7 @@ PORT=8000
 NODE_ENV=development
 
 # Database
-DATABASE_URL="postgresql://user:password@localhost:5432/everything_db"
+DATABASE_URL="postgresql://user:password@localhost:5432/omni_db"
 
 # Redis
 REDIS_URL="redis://localhost:6379"

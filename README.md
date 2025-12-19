@@ -1,10 +1,10 @@
-# Everything Backend
+# Omni Backend
 
 A comprehensive backend system for ingesting, storing, and intelligently processing data from multiple sources using AI-powered agents. Built as a monorepo with microservices architecture, this system provides semantic memory storage, intelligent data enrichment, and automated notifications.
 
 ## Overview
 
-Everything Backend is a distributed system that:
+Omni Backend is a distributed system that:
 - **Ingests** data from multiple external sources (Gmail, GitHub, Calendar, Twitter)
 - **Stores** memories with semantic search capabilities using vector embeddings
 - **Enriches** data using AI agents for action items, deadlines, finance tracking, and suggestions
@@ -15,7 +15,7 @@ Everything Backend is a distributed system that:
 The system is built as a Turborepo monorepo with four main services:
 
 ```
-everything-backend/
+omni-backend/
 ├── apps/
 │   ├── server/              # Main API server (Auth, Users, Notifications)
 │   ├── ingestion-service/  # Data ingestion from external sources
@@ -90,7 +90,7 @@ AI-powered data enrichment:
 1. **Clone the repository**
    ```bash
    git clone https://github.com/sincerelyyyash/everything-backend
-   cd everything-backend
+   cd omni-backend
    ```
 
 2. **Install dependencies**
@@ -131,7 +131,7 @@ Each service requires its own `.env` file. Copy the example files and configure:
 #### Root `.env`
 ```bash
 # Database
-DATABASE_URL="postgresql://user:password@localhost:5432/everything_db"
+DATABASE_URL="postgresql://user:password@localhost:5432/omni_db"
 
 # Redis
 REDIS_URL="redis://localhost:6379"
@@ -141,7 +141,7 @@ REDIS_URL="redis://localhost:6379"
 ```bash
 PORT=8000
 NODE_ENV=development
-DATABASE_URL="postgresql://user:password@localhost:5432/everything_db"
+DATABASE_URL="postgresql://user:password@localhost:5432/omni_db"
 REDIS_URL="redis://localhost:6379"
 
 # Auth
@@ -158,7 +158,7 @@ GITHUB_CLIENT_SECRET="your-github-client-secret"
 #### Memory Engine (`apps/memory-engine/.env`)
 ```bash
 PORT=8001
-DATABASE_URL="postgresql://user:password@localhost:5432/everything_db"
+DATABASE_URL="postgresql://user:password@localhost:5432/omni_db"
 REDIS_URL="redis://localhost:6379"
 
 # OpenAI
@@ -179,7 +179,7 @@ QDRANT_COLLECTION_NAME="memories"
 
 #### Ingestion Service (`apps/ingestion-service/.env`)
 ```bash
-DATABASE_URL="postgresql://user:password@localhost:5432/everything_db"
+DATABASE_URL="postgresql://user:password@localhost:5432/omni_db"
 REDIS_URL="redis://localhost:6379"
 MEMORY_ENGINE_URL="http://localhost:8001"
 
@@ -192,7 +192,7 @@ GITHUB_CLIENT_SECRET="your-github-client-secret"
 
 #### AI Service (`apps/ai-service/.env`)
 ```bash
-DATABASE_URL="postgresql://user:password@localhost:5432/everything_db"
+DATABASE_URL="postgresql://user:password@localhost:5432/omni_db"
 REDIS_URL="redis://localhost:6379"
 MEMORY_ENGINE_URL="http://localhost:8001"
 
@@ -260,7 +260,7 @@ bun run build
 ## Project Structure
 
 ```
-everything-backend/
+omni-backend/
 ├── apps/
 │   ├── server/                    # Main API server
 │   │   ├── src/

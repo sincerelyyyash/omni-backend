@@ -73,7 +73,7 @@ ai-service/
 
 ```bash
 # Database
-DATABASE_URL="postgresql://user:password@localhost:5432/everything_db"
+DATABASE_URL="postgresql://user:password@localhost:5432/omni_db"
 
 # Redis
 REDIS_URL="redis://localhost:6379"

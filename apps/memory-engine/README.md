@@ -4,7 +4,7 @@ A TypeScript/Bun service that ingests, stores, and retrieves "memories" (text sn
 
 ## Overview
 
-The Memory Engine is the core storage and retrieval system for the Everything Backend. It provides:
+The Memory Engine is the core storage and retrieval system for the Omni Backend. It provides:
 - Semantic memory storage with vector embeddings
 - Fact-first architecture for richer recall
 - RAG (Retrieval-Augmented Generation) capabilities
@@ -148,7 +148,7 @@ Request/response schemas are enforced via Zod in `packages/types/memory/memory.t
 PORT=8001
 
 # Database
-DATABASE_URL="postgresql://user:password@localhost:5432/everything_db"
+DATABASE_URL="postgresql://user:password@localhost:5432/omni_db"
 
 # Redis (optional, for caching)
 REDIS_URL="redis://localhost:6379"
